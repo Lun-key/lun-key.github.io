@@ -1,0 +1,17 @@
+---
+/**
+ * 文件职责：首页首屏的「分层漫画背景」——一张远景漫画 + 一层前景角色，随鼠标产生视差。
+ * 两张图都来自 mangaArt()（按名字返回 src/width/height 等属性，用 {...} 展开到 <img>）。
+ * 被谁引用：HomePage.astro 的 Hero 区。
+ * 改动影响：只影响首页背景；视差逻辑由 MangaRuntime / manga-runtime.mjs 挂在 data-manga-scene 上。
+ */
+import { mangaArt } from "../data/mangaArt";
+---
+<!-- data-manga-scene 是视差脚本的挂载点；aria-hidden 表示纯装饰，读屏软件跳过。 -->
+<div class="manga-scene" data-manga-scene aria-hidden="true">
+  <div class="manga-scene-camera">
+    <!-- 远层：data-manga-back；前景角色：data-manga-front，脚本按这两个标记做不同位移。 -->
+    <img {...mangaArt("hero-manga")} class="manga-scene-back" data-manga-back alt="" decoding="async" draggable="false" />
+    <img {...mangaArt("hero-character")} class="manga-scene-front" data-manga-front alt="" decoding="async" fetchpriority="high" draggable="false" />
+  </div>
+</div>

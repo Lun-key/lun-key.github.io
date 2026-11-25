@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 94" width="680" height="94">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&amp;display=swap');
+      .title-text {
+        font-family: 'Nunito', 'Segoe UI', ui-sans-serif, sans-serif;
+        font-weight: 700;
+        font-size: 56px;
+        letter-spacing: 0.02em;
+        fill: url(#title-grad);
+        text-anchor: middle;
+        dominant-baseline: auto;
+        opacity: 0;
+        animation: fade-in 0.6s ease 0.1s forwards;
+      }
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .title-text { animation: none; opacity: 1; }
+      }
+    </style>
+    <linearGradient id="title-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#4da8da"/>
+      <stop offset="55%"  stop-color="#7ec8e3"/>
+      <stop offset="100%" stop-color="#ff9a76"/>
+    </linearGradient>
+  </defs>
+  <text class="title-text" x="340" y="72">Lumen Kael Xystus</text>
+</svg>

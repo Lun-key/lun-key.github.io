@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc
+tests/
+.bat
+/Profile.jpg
+!/public/themes/lumen-kael-xystus/assets/profile.jpg
+fuyukawa_kagari_static_2400x1700.png
+astrbot_plugin_dev_experience.md
+roleplay_persona_prompt_experience.md
+
+文章封面/

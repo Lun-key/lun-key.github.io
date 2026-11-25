@@ -1,0 +1,145 @@
+/*
+ * 文件头注释 —— 这份样式做什么：
+ * 这是 lumen-kael-xystus 主题"漫画风格的内页"样式表，由 BaseLayout.astro 以 ?url 方式按需加载，
+ * 只作用于内页（不作用于首页 Home）。内容按页面分区：博客头图+归档页、作品页、游戏室、
+ * 文章版权栏、404 页面，以及各断点响应式规则。
+ * 被谁引入：layouts/BaseLayout.astro 中 `import mangaPagesHref from "../styles/manga-pages.css?url"`，
+ *           再由布局按页面类型决定是否注入。
+ * 改它影响哪里：博客归档/作品/游戏室/404 等内页的漫画化排版；首页样式在 manga.css。
+ * 教学提示：body[data-lumenkaelxystus] 前缀保证规则只在启用本主题时生效。
+ */
+/* Inner-page presentation; intentionally absent from Home. */
+
+/* ========== 博客头图 + 归档书架（书脊侧栏 + 标签切换）========== */
+/* 教学：archive-shelf 用 Grid 分成"左侧书脊 130px + 右侧内容"两列。 */
+body[data-lumenkaelxystus] .blog-hero-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 32px; padding: 24px 0; min-height: 300px; }
+body[data-lumenkaelxystus] .blog-title-art { position: relative; height: 280px; padding: 8px 70px 26px 0; }
+body[data-lumenkaelxystus] .blog-opening-panel { width: 100%; height: 100%; }
+body[data-lumenkaelxystus] .blog-opening-character { position: absolute; bottom: 0; right: 0; width: 112px; height: 205px; }
+body[data-lumenkaelxystus] .manga-page-stamp { position: absolute; right: 6px; top: 8px; color: var(--rose); font: 700 .7rem/1.2 Consolas, monospace; transform: rotate(9deg); }
+body[data-lumenkaelxystus] .archive-shelf { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 32px; width: min(1144px, calc(100% - 80px)); margin: 24px auto 0; align-items: start; }
+/* 侧栏吸顶：position:sticky;top:106px 让书脊滚动到 106px 处就固定，方便长列表里切换分类。 */
+body[data-lumenkaelxystus] .archive-spine { position: sticky; top: 106px; padding-top: 20px; }
+body[data-lumenkaelxystus] .archive-tabs { display: flex; flex-direction: column; align-items: stretch; border-left: 2px solid var(--line); }
+body[data-lumenkaelxystus] .archive-tabs button { min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin-left: -2px; background: transparent; border: 0; border-left: 2px solid transparent; color: var(--ink-soft); font-size: .8rem; cursor: pointer; text-align: left; }
+body[data-lumenkaelxystus] .archive-tabs svg { width: 16px; height: 16px; }
+/* 教学：button[aria-pressed="true"] 是脚本写入的状态钩子——被选中时高亮；
+   aria-pressed 是无障碍属性，同时承担"当前选中"的语义。 */
+body[data-lumenkaelxystus] .archive-tabs button[aria-pressed="true"] { border-left-color: var(--rose); color: var(--rose); background: #f7eaf080; }
+body[data-lumenkaelxystus] .archive-spine > p { font-size: .7rem; color: var(--ink-soft); padding-left: 12px; font-variant-numeric: tabular-nums; }
+body[data-lumenkaelxystus] .archive-companion { width: 100px; height: 160px; margin-top: 24px; }
+body[data-lumenkaelxystus] .archive-shelf .blog-timeline { width: 100%; margin: 0; }
+body[data-lumenkaelxystus] .archive-shelf .blog-timeline-item { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+body[data-lumenkaelxystus] .archive-shelf .timeline-date { display: flex; align-items: center; gap: 12px; padding: 0; }
+body[data-lumenkaelxystus] .archive-shelf .blog-post-row { grid-template-columns: minmax(160px, .65fr) minmax(0, 1.2fr); padding: 22px 26px 22px 22px; border-radius: 4px; box-shadow: 4px 5px 0 #e8edf5; }
+body[data-lumenkaelxystus] .archive-shelf .blog-timeline-item:nth-child(even) .blog-post-row { box-shadow: 4px 5px 0 #f3e6ed; }
+/* ========== 作品页（Works）：工作台 + 卡片网格 ========== */
+body[data-lumenkaelxystus] .works-shell { gap: 28px; }
+body[data-lumenkaelxystus] .works-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .85fr); align-items: center; gap: 36px; padding: 16px 0 30px; }
+body[data-lumenkaelxystus] .workshop-scene { position: relative; min-height: 285px; padding: 8px 58px 55px 0; }
+body[data-lumenkaelxystus] .workshop-panel { width: 100%; height: 190px; }
+body[data-lumenkaelxystus] .workshop-character { position: absolute; right: 0; bottom: 20px; width: 115px; height: 215px; }
+body[data-lumenkaelxystus] .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 28px; }
+body[data-lumenkaelxystus] .works-card { border: 1px solid var(--line); border-top: 3px solid var(--blue); border-radius: 4px; background: linear-gradient(#e7edf540 1px, transparent 1px) 0 24px / 100% 28px, white; }
+/* 第一张卡片跨整行：grid-column:1 / -1 表示从第一条竖线到最后一条，独占一行做大图展示。 */
+body[data-lumenkaelxystus] .works-card:first-child { grid-column: 1 / -1; padding-right: 215px; min-height: 280px; }
+body[data-lumenkaelxystus] .works-page-number { position: absolute; right: 22px; top: 18px; font: 1.05rem Consolas, monospace; color: #a2b2c6; }
+body[data-lumenkaelxystus] .works-card-head { padding-right: 24px; }
+body[data-lumenkaelxystus] .works-card-companion { position: absolute; bottom: 16px; right: 42px; width: 128px; height: 200px; }
+body[data-lumenkaelxystus] .works-card--pink { border-top-color: var(--pink); }
+body[data-lumenkaelxystus] .works-card--mint { border-top-color: var(--mint); }
+body[data-lumenkaelxystus] .works-card--lavender { border-top-color: var(--lavender); }
+body[data-lumenkaelxystus] .works-card--orange { border-top-color: #dfbc88; }
+/* ========== 游戏室（Playroom）：机台卡片网格 ==========
+   教学：repeat(3, minmax(0,1fr)) 表示三等分列；minmax(0,1fr) 防止长内容把列撑破。 */
+body[data-lumenkaelxystus] .game-hero-card { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) 150px; align-items: center; gap: 32px; padding: 30px 0; }
+body[data-lumenkaelxystus] .playroom-opening-panel { width: 100%; height: 240px; }
+body[data-lumenkaelxystus] .playroom-companions { width: 150px; height: 220px; align-self: end; }
+body[data-lumenkaelxystus] .playroom-heading h1 { font-size: 2.2rem; }
+body[data-lumenkaelxystus] .playroom-heading .page-title-en { display: block; padding: 6px 0 0; }
+body[data-lumenkaelxystus] .playroom-ticket-line { width: min(1144px, calc(100% - 80px)); margin: 26px auto 0; display: flex; align-items: center; gap: 18px; font: .68rem Consolas, monospace; color: var(--rose); }
+body[data-lumenkaelxystus] .playroom-ticket-line i { flex: 1; border-top: 1px dashed #d6c2d1; }
+body[data-lumenkaelxystus] .game-room { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+body[data-lumenkaelxystus] .game-cabinet-card { border: 1px solid var(--manga-rule); border-radius: 6px; box-shadow: 5px 6px 0 var(--game-tint); }
+body[data-lumenkaelxystus] .game-cabinet-card:nth-child(2) { margin-top: 26px; }
+body[data-lumenkaelxystus] .game-machine-label { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; font: .7rem Consolas, monospace; color: var(--game-accent); background: #fff; }
+body[data-lumenkaelxystus] .game-machine-label svg { width: 20px; height: 20px; }
+body[data-lumenkaelxystus] .game-cabinet-screen { border-block: 1px solid var(--line); }
+body[data-lumenkaelxystus] .game-cabinet-copy { padding: 22px; }
+/* ========== 文章版权栏 + 404 页面插画 ========== */
+body[data-lumenkaelxystus] .article-colophon { margin-top: 56px; border-block: 1px solid var(--line); padding: 26px 0; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); align-items: center; gap: 32px; }
+body[data-lumenkaelxystus] .article-colophon > img { width: 100%; height: 120px; }
+body[data-lumenkaelxystus] .article-colophon p { margin: 4px 0 12px; font-size: .9rem; }
+body[data-lumenkaelxystus] .article-colophon a { display: inline-flex; gap: 8px; align-items: center; color: var(--accent); font-size: .8rem; }
+body[data-lumenkaelxystus] .article-colophon svg { width: 16px; height: 16px; }
+body[data-lumenkaelxystus] .not-found-visual { position: relative; min-height: 430px; background: none; box-shadow: none; border: 0; overflow: visible; }
+body[data-lumenkaelxystus] .not-found-visual .lost-manga-page { width: 74%; height: 360px; object-fit: contain; transform: rotate(-4deg); }
+body[data-lumenkaelxystus] .not-found-visual .lost-page-character { position: absolute; right: 0; bottom: 48px; width: 135px; height: 280px; object-fit: contain; }
+body[data-lumenkaelxystus] .not-found-visual figcaption { margin-top: 24px; text-align: center; }
+/* ========== 响应式：1100 / 760 / 480px 三个断点 ========== */
+@media (max-width: 1100px) {
+  body[data-lumenkaelxystus] .game-hero-card { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr) 100px; gap: 20px; }
+  body[data-lumenkaelxystus] .playroom-companions { width: 100px; }
+  body[data-lumenkaelxystus] .playroom-heading h1 { font-size: 1.9rem; }
+  body[data-lumenkaelxystus] .game-room { gap: 18px; }
+  body[data-lumenkaelxystus] .game-cabinet-copy { padding: 18px; }
+}
+@media (max-width: 760px) {
+  body[data-lumenkaelxystus] .blog-hero-card { min-height: 270px; gap: 14px; }
+  body[data-lumenkaelxystus] .blog-title-art { height: 240px; padding: 0 0 55px; }
+  body[data-lumenkaelxystus] .blog-opening-character { width: 75px; height: 125px; bottom: -6px; }
+  body[data-lumenkaelxystus] .blog-title-copy h1 { font-size: 1.8rem; }
+  body[data-lumenkaelxystus] .blog-title-copy .page-title-en { display: block; padding: 4px 0 0; }
+  body[data-lumenkaelxystus] .archive-shelf { width: calc(100% - 48px); grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 8px; }
+  body[data-lumenkaelxystus] .archive-spine { position: static; padding: 10px 0 0; }
+  body[data-lumenkaelxystus] .archive-tabs { flex-direction: row; flex-wrap: wrap; border-left: 0; border-bottom: 1px solid var(--line); }
+  body[data-lumenkaelxystus] .archive-tabs button { border-left: 0; border-bottom: 2px solid transparent; margin: 0 0 -1px; padding-inline: 10px; font-size: .74rem; }
+  body[data-lumenkaelxystus] .archive-tabs button[aria-pressed="true"] { border-bottom-color: var(--rose); }
+  body[data-lumenkaelxystus] .archive-spine > p { margin: 10px 0 0; padding: 0; }
+  body[data-lumenkaelxystus] .archive-companion { display: none; }
+  body[data-lumenkaelxystus] .archive-shelf .blog-post-row { padding: 18px; gap: 20px; }
+  body[data-lumenkaelxystus] .works-hero { grid-template-columns: minmax(0, 1fr) 170px; gap: 20px; }
+  body[data-lumenkaelxystus] .workshop-scene { min-height: 240px; padding: 0 0 40px; }
+  body[data-lumenkaelxystus] .workshop-panel { height: 150px; }
+  body[data-lumenkaelxystus] .workshop-character { width: 74px; height: 138px; bottom: 10px; }
+  body[data-lumenkaelxystus] .works-hero h1 { font-size: 1.8rem; }
+  body[data-lumenkaelxystus] .works-hero .page-title-en { display: block; padding: 4px 0 0; }
+  body[data-lumenkaelxystus] .works-card:first-child { padding-right: 150px; }
+  body[data-lumenkaelxystus] .works-card-companion { width: 90px; height: 150px; right: 28px; }
+  body[data-lumenkaelxystus] .game-hero-card { grid-template-columns: minmax(0, 1fr) 120px; gap: 20px; }
+  body[data-lumenkaelxystus] .playroom-opening-panel { grid-column: 1 / -1; width: 100%; height: 126px; object-position: left; }
+  body[data-lumenkaelxystus] .playroom-companions { width: 120px; height: 175px; }
+  body[data-lumenkaelxystus] .playroom-heading h1 { font-size: 1.9rem; }
+  body[data-lumenkaelxystus] .playroom-ticket-line { width: calc(100% - 48px); gap: 10px; font-size: .57rem; }
+  body[data-lumenkaelxystus] .game-room { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  body[data-lumenkaelxystus] .game-cabinet-card { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); }
+  body[data-lumenkaelxystus] .game-cabinet-card:nth-child(2) { margin-top: 0; }
+  body[data-lumenkaelxystus] .game-machine-label { grid-column: 1 / -1; }
+  body[data-lumenkaelxystus] .game-cabinet-screen { height: 100%; min-height: 220px; border-bottom: 0; border-right: 1px solid var(--line); }
+  body[data-lumenkaelxystus] .article-colophon { gap: 18px; }
+  body[data-lumenkaelxystus] .not-found-visual { min-height: 360px; }
+  body[data-lumenkaelxystus] .not-found-visual .lost-manga-page { height: 300px; }
+  body[data-lumenkaelxystus] .not-found-visual .lost-page-character { width: 100px; height: 220px; }
+}
+@media (max-width: 480px) {
+  body[data-lumenkaelxystus] .blog-hero-card { grid-template-columns: minmax(0, 1fr) 100px; min-height: 245px; }
+  body[data-lumenkaelxystus] .blog-title-art { height: 200px; padding: 0; }
+  body[data-lumenkaelxystus] .blog-opening-panel { display: none; }
+  body[data-lumenkaelxystus] .blog-opening-character { width: 90px; height: 170px; bottom: 0; }
+  body[data-lumenkaelxystus] .manga-page-stamp { top: 0; right: 6px; }
+  body[data-lumenkaelxystus] .archive-shelf .blog-post-row { grid-template-columns: minmax(0, 1fr); }
+  body[data-lumenkaelxystus] .works-hero { grid-template-columns: minmax(0, 1fr) 95px; gap: 12px; }
+  body[data-lumenkaelxystus] .workshop-scene { min-height: 230px; }
+  body[data-lumenkaelxystus] .workshop-panel { display: none; }
+  body[data-lumenkaelxystus] .workshop-character { width: 90px; height: 180px; bottom: 22px; }
+  body[data-lumenkaelxystus] .works-grid { grid-template-columns: minmax(0, 1fr); }
+  body[data-lumenkaelxystus] .works-card:first-child { padding-right: 20px; padding-bottom: 150px; }
+  body[data-lumenkaelxystus] .works-card-companion { height: 120px; bottom: 12px; right: 20px; }
+  body[data-lumenkaelxystus] .game-hero-card { grid-template-columns: minmax(0, 1fr) 94px; }
+  body[data-lumenkaelxystus] .playroom-companions { width: 94px; height: 150px; }
+  body[data-lumenkaelxystus] .playroom-heading h1 { font-size: 1.65rem; }
+  body[data-lumenkaelxystus] .game-cabinet-card { grid-template-columns: minmax(0, 1fr); }
+  body[data-lumenkaelxystus] .game-cabinet-screen { height: 190px; min-height: 190px; border-right: 0; border-bottom: 1px solid var(--line); }
+  body[data-lumenkaelxystus] .article-colophon { grid-template-columns: minmax(0, 1fr); }
+  body[data-lumenkaelxystus] .article-colophon > img { height: 105px; object-position: left; }
+}

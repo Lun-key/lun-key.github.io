@@ -1,0 +1,31 @@
+---
+/**
+ * 【路由薄壳 · 动态路由】文件名 [...slug].astro 中的 [...] 表示"捕获所有子路径"：
+ * /blog/ 下任意层级的路径都会命中这里，用于渲染文章详情页。
+ * - 本文件对应 URL：/blog/<文章的 slug>，例如 /blog/my-first-post/。
+ * - 它不写死某一个页面：getStaticPaths() 在构建时为每篇已发布文章生成一条静态路径，
+ *   路径数据来自 core/content/blog 的 getPublishedPostPaths()。
+ * - Astro.props.post 就是当前文章；render(post) 把 Markdown 正文编译成 Content 组件，
+ *   并同时取出 headings（标题目录）。
+ * - 页面外壳用默认主题 lumen-kael-xystus 的 ArticlePage，正文作为子元素 <Content /> 传入。
+ * - 多主题分发：这里是默认主题；各主题独立入口在 pages/themes/<主题>/blog/[...slug].astro。
+ */
+import { render } from "astro:content";
+import { getPublishedPostPaths } from "@/core/content/blog";
+import { ArticlePage } from "@/themes/lumen-kael-xystus";
+
+// 构建阶段执行：返回所有已发布文章的路径，Astro 据此预生成静态页面
+export async function getStaticPaths() {
+  return getPublishedPostPaths();
+}
+
+// 当前文章对象由上面 getStaticPaths 返回的 props 传入
+const { post } = Astro.props;
+// 把 Markdown 渲染成 Content 组件，并抽取标题目录 headings
+const { Content, headings } = await render(post);
+---
+
+<!-- ArticlePage 负责页面框架，里面的 <Content /> 渲染这篇文章的 Markdown 正文 -->
+<ArticlePage frontmatter={post.data} headings={headings}>
+  <Content />
+</ArticlePage>

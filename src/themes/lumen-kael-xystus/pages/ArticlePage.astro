@@ -1,0 +1,19 @@
+---
+/**
+ * 文件头注释 —— 这个文件做什么：
+ * 文章详情页的「入口页面」，本身极薄：只接收 frontmatter 与 headings，转交给 ArticleLayout。
+ * 被谁引用：由路由/内容集合根据 src/content 下的文章自动生成（每篇 .md 对应一个页面）。
+ * 改它影响哪里：这里是内容与布局之间的中转站；真正排版在 ArticleLayout.astro，
+ * 想改文章页外观请改 ArticleLayout，不要在这里堆内容。
+ */
+import ArticleLayout from "../layouts/ArticleLayout.astro";
+
+// frontmatter（文章元数据）和 headings（正文标题列表）都来自内容集合，原样传给布局。
+const { frontmatter, headings } = Astro.props;
+---
+
+<!-- 把正文内容通过 <slot /> 放进 ArticleLayout 的正文插槽里，形成「布局 + 内容」的组合。 -->
+<ArticleLayout frontmatter={frontmatter} headings={headings}>
+  <slot />
+</ArticleLayout>
+

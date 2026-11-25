@@ -1,0 +1,80 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "live2d.moc3",
+		"Textures": [
+			"live2d.4096/texture_00.png"
+		],
+		"Physics": "live2d.physics3.json",
+		"DisplayInfo": "live2d.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "普通",
+				"File": "live2d.neutral.exp3.json"
+			},
+			{
+				"Name": "微笑",
+				"File": "live2d.smile.exp3.json"
+			},
+			{
+				"Name": "半闭眼",
+				"File": "live2d.usume.exp3.json"
+			},
+			{
+				"Name": "惊讶",
+				"File": "live2d.surprise.exp3.json"
+			},
+			{
+				"Name": "嫌弃眼",
+				"File": "live2d.jito.exp3.json"
+			},
+			{
+				"Name": "左眼眨",
+				"File": "live2d.winkL.exp3.json"
+			},
+			{
+				"Name": "右眼眨",
+				"File": "live2d.winkR.exp3.json"
+			}
+		],
+		"Motions": {
+			"Idle": [
+				{
+					"File": "live2d.idle.motion3.json"
+				}
+			],
+			"Blink": [
+				{
+					"File": "live2d.blink.motion3.json"
+				}
+			],
+			"Nod": [
+				{
+					"File": "live2d.nod.motion3.json"
+				}
+			],
+			"Shake": [
+				{
+					"File": "live2d.shake.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamMouthOpenY"
+			]
+		}
+	]
+}
