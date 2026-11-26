@@ -64,7 +64,7 @@ const themeRoutePrefix = getThemePath("lumen-kael-xystus", "/").replace(/\/$/, "
   </section>
 
   <!-- 搜索卡片：data-pagefind-ignore 让搜索索引忽略本卡本身；data-theme-route-prefix 把前缀传给脚本。 -->
-  <section class="blog-search-card" data-pagefind-ignore data-theme-route-prefix={themeRoutePrefix}>
+  <section class="blog-search-card" data-pagefind-ignore data-theme-route-prefix={themeRoutePrefix} data-base-url={import.meta.env.BASE_URL}>
     <div class="blog-search-heading">
       <Icon name="tabler:search" aria-hidden="true" />
       <div>
@@ -136,6 +136,7 @@ const themeRoutePrefix = getThemePath("lumen-kael-xystus", "/").replace(/\/$/, "
     const searchInput = document.querySelector("[data-blog-search]");
     const searchResults = document.querySelector("[data-blog-search-results]");
     const themeRoutePrefix = document.querySelector("[data-theme-route-prefix]")?.dataset.themeRoutePrefix ?? "";
+    const baseUrl = document.querySelector("[data-base-url]")?.dataset.baseUrl ?? "/";
     let pagefindReady;
 
     // escapeHtml：把用户可能的特殊字符转义成实体，防止把搜索关键词当 HTML 注入（防 XSS）。
@@ -152,7 +153,7 @@ const themeRoutePrefix = getThemePath("lumen-kael-xystus", "/").replace(/\/$/, "
     const loadPagefind = async () => {
       if (!pagefindReady) {
         const importRuntime = new Function("path", "return import(path)");
-        pagefindReady = importRuntime("/pagefind/pagefind.js").then(async (pagefind) => {
+        pagefindReady = importRuntime(`${baseUrl}pagefind/pagefind.js`).then(async (pagefind) => {
           await pagefind.options({
             excerptLength: 18
           });

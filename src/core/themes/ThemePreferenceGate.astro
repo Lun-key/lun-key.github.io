@@ -25,6 +25,7 @@ const config = {
   honorPreference,
   defaultTheme: DEFAULT_THEME_ID,
   storageKey: THEME_STORAGE_KEY,
+  baseUrl: import.meta.env.BASE_URL,
   themes: themes.map(({ id, label, routePrefix }) => ({ id, label, routePrefix }))
 };
 ---
@@ -58,9 +59,24 @@ const config = {
       }
     };
 
+    // GitHub Pages 子路径部署时 baseUrl 如 "/Lumen-Kael-Xystus.io/"，location.pathname 会带此前缀。
+    // 路径运算统一在“去掉 base”的中立空间进行，输出跳转地址时再加回 base。
+    const basePrefix = (config.baseUrl || "/").replace(/\/$/, "");
+    const stripBase = (pathname) => {
+      if (basePrefix && pathname === basePrefix) return "/";
+      if (basePrefix && pathname.startsWith(`${basePrefix}/`)) return pathname.slice(basePrefix.length) || "/";
+      return pathname;
+    };
+    const withBase = (pathname) => {
+      const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
+      if (normalized === "/") return config.baseUrl || "/";
+      return `${basePrefix}${normalized}`;
+    };
+
     // 把带主题前缀的路径（如 /flcl/blog/）还原成“中立路径”/blog/，方便在不同主题间搬同一篇内容。
     const canonicalPath = (pathname) => {
-      const normalized = pathname && pathname.startsWith("/") ? pathname : `/${pathname || ""}`;
+      const raw = stripBase(pathname || "");
+      const normalized = raw.startsWith("/") ? raw : `/${raw}`;
       const prefixed = [...config.themes]
         .filter((theme) => theme.routePrefix)
         .sort((a, b) => b.routePrefix.length - a.routePrefix.length);
@@ -75,14 +91,14 @@ const config = {
       return normalized || "/";
     };
 
-    // 反过来：给一个主题 id 和中立路径，算出它在该主题下的完整路径（默认主题不加前缀）。
+    // 反过来：给一个主题 id 和中立路径，算出它在该主题下的完整路径（含 base，默认主题不加主题前缀）。
     const pathForTheme = (themeId, pathname) => {
       const target = config.themes.find((theme) => theme.id === themeId)
         || config.themes.find((theme) => theme.id === config.defaultTheme);
       const path = canonicalPath(pathname);
-      if (target?.id === config.defaultTheme) return path;
-      if (!target || !target.routePrefix) return path;
-      return path === "/" ? `${target.routePrefix}/` : `${target.routePrefix}${path}`;
+      if (target?.id === config.defaultTheme) return withBase(path);
+      if (!target || !target.routePrefix) return withBase(path);
+      return withBase(path === "/" ? `${target.routePrefix}/` : `${target.routePrefix}${path}`);
     };
 
     let storedTheme = readPreference();

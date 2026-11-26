@@ -19,3 +19,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Scope
+-----
+This license applies to the original software, theme styles, scripts, tests,
+configuration, and associated technical documentation in this repository,
+only to the extent that lun-key holds the rights to license them.
+
+Original blog prose in src/content/blog/ is licensed separately as described
+in CONTENT_LICENSE.md. Original software code examples in those articles
+are covered by this MIT License unless otherwise stated.
+
+Images, illustrations, screenshots, video, audio, fonts, character artwork,
+and other media assets are excluded unless explicitly licensed separately.
+This exclusion also applies to media embedded in source code or SVG files.
+Third-party software and other third-party material retain their own
+licenses and notices. See THIRD_PARTY_ASSETS.md for the media-use boundary.

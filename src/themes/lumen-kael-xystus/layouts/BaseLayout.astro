@@ -50,8 +50,9 @@ const {
   stylesheets = []
 } = Astro.props;
 // canonicalPath / canonical：规范化后的页面路径与完整网址，写入 <link rel="canonical"> 供 SEO 使用。
+// canonicalPath 是不带 base 的规范路径（用于样式判断）；canonical 用 Astro.url（已含 base）构造，保证 SEO 网址正确。
 const canonicalPath = getCanonicalPath(Astro.url.pathname);
-const canonical = new URL(canonicalPath, Astro.site ?? Astro.url);
+const canonical = new URL(Astro.url.pathname, Astro.url);
 // 主题首页路径：本主题挂在 /themes/lumen-kael-xystus/ 下，所有站内链接都要经 getThemePath 加前缀。
 const themeHomePath = getThemePath("lumen-kael-xystus", "/");
 // 导航项：把 site.nav 的每个链接都转换成带主题前缀的地址，否则会跳到默认主题。
@@ -59,15 +60,21 @@ const navItems = site.nav.map((item) => ({
   ...item,
   href: getThemePath("lumen-kael-xystus", item.href)
 }));
-// 是否处于「备选主题路由」（路径以 /themes/ 开头）：这类页面会被搜索引擎忽略，避免重复收录。
-const isAlternateThemeRoute = Astro.url.pathname.startsWith("/themes/");
+// 是否处于「备选主题路由」（路径含 /themes/ 段）：这类页面会被搜索引擎忽略，避免重复收录。
+// Astro.url.pathname 在子路径部署时带 base，用 pathname.includes 而非 startsWith 判定。
+const isAlternateThemeRoute = Astro.url.pathname.includes("/themes/");
 // 主题 404 重定向脚本：以字符串形式存放，配合下方 set:html 注入。
 // 作用：访问本主题下不存在的地址时，跳到该主题的 /404/ 并带上原始地址参数。
+// base 前缀由 frontmatter 注入，脚本内先剥离再匹配主题段，输出跳转路径时再加回。
+const notFoundBase = import.meta.env.BASE_URL.replace(/\/$/, "");
 const themedNotFoundRedirectScript = `(() => {
-  const themeMatch = window.location.pathname.match(/^\\/themes\\/(lumen-kael-xystus)(?:\\/|$)/);
+  const basePrefix = ${JSON.stringify(notFoundBase)};
+  let pathname = window.location.pathname;
+  if (basePrefix && pathname.startsWith(basePrefix + "/")) pathname = pathname.slice(basePrefix.length) || "/";
+  const themeMatch = pathname.match(/^\\/themes\\/(lumen-kael-xystus)(?:\\/|$)/);
   if (!themeMatch) return;
   const themeId = themeMatch[1];
-  const notFoundPath = "/themes/" + themeId + "/404/";
+  const notFoundPath = basePrefix + "/themes/" + themeId + "/404/";
   if (window.location.pathname === notFoundPath) return;
   const original = window.location.pathname + window.location.search + window.location.hash;
   window.location.replace(notFoundPath + "?from=" + encodeURIComponent(original));
@@ -469,7 +476,11 @@ const themedNotFoundRedirectScript = `(() => {
       };
 
       const isHomeRoute = () => {
-        const path = window.location.pathname.replace(/\/index\.html$/, "/");
+        // 剥离 base 后再判断，兼容 GitHub Pages 子路径部署。
+        const basePrefix = import.meta.env.BASE_URL.replace(/\/$/, "");
+        let path = window.location.pathname.replace(/\/index\.html$/, "/");
+        if (basePrefix && path.startsWith(basePrefix + "/")) path = path.slice(basePrefix.length) || "/";
+        if (basePrefix && path === basePrefix) path = "/";
         return path === "/" || path === "/themes/lumen-kael-xystus/" || path === "/themes/lumen-kael-xystus";
       };
 
@@ -612,7 +623,7 @@ const themedNotFoundRedirectScript = `(() => {
         fallback.innerHTML = `
           <div class="waifu-local-bubble">Live2D 加载有点害羞，先由我值班。</div>
           <div class="waifu-local-character">
-            <img src="/themes/lumen-kael-xystus/assets/profile.webp" alt="" width="128" height="128" />
+            <img src="${import.meta.env.BASE_URL}themes/lumen-kael-xystus/assets/profile.webp" alt="" width="128" height="128" />
           </div>
         `;
         document.body.appendChild(fallback);
@@ -986,7 +997,7 @@ const themedNotFoundRedirectScript = `(() => {
           }
 
           try {
-            const response = await fetch("/themes/lumen-kael-xystus/music/manifest.json", { cache: "no-cache" });
+            const response = await fetch(`${import.meta.env.BASE_URL}themes/lumen-kael-xystus/music/manifest.json`, { cache: "no-cache" });
             player.tracks = await response.json();
           } catch {
             player.tracks = [];
@@ -1245,7 +1256,7 @@ const themedNotFoundRedirectScript = `(() => {
         const action = button.dataset.contextAction;
         if (action === "top") window.scrollTo({ top: 0, behavior: "smooth" });
         if (action === "refresh") window.location.reload();
-        if (action === "home") window.location.assign("/");
+        if (action === "home") window.location.assign(import.meta.env.BASE_URL);
         if (action === "back") history.back();
         if (action === "forward") history.forward();
         if (action === "copy") {

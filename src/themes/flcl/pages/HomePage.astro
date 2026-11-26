@@ -34,7 +34,7 @@ const themeBase = getThemePath("flcl", "/");
   <meta name="robots" content="noindex,follow" />
   <title>FLCL · {site.name}</title>
   <ThemePreferenceGate currentTheme="flcl" />
-  <link rel="icon" type="image/png" href="/themes/lumen-kael-xystus/assets/mascot-favicon-navy.png" />
+  <link rel="icon" type="image/png" href={`${import.meta.env.BASE_URL}themes/lumen-kael-xystus/assets/mascot-favicon-navy.png`} />
   <ClientRouter />
   <ConsoleEasterEgg />
 </head>

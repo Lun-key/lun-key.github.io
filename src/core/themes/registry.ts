@@ -35,16 +35,39 @@ export function getTheme(themeId: ThemeId) {
     ?? themes[0];
 }
 
+// Astro 的 base：GitHub Pages 项目站点部署在 /<仓库名>/ 子路径下时为 "/Lumen-Kael-Xystus.io"，本地为 "/"。
+// routePrefix 始终保存不带 base 的规范值；对外输出 href 或匹配 location.pathname 时才处理 base。
+const rawBase = import.meta.env.BASE_URL;
+// basePrefix：不带尾部斜杠的 base，如 "" 或 "/Lumen-Kael-Xystus.io"。
+const basePrefix = rawBase.replace(/\/$/, "");
+
 // 工具函数：确保路径以 / 开头
 function withLeadingSlash(pathname: string) {
   if (!pathname) return "/";
   return pathname.startsWith("/") ? pathname : `/${pathname}`;
 }
 
-// 获取路径的规范形式（去除主题前缀，还原为内容路径）
-// 例如：/themes/flcl/blog/hello → /blog/hello
-export function getCanonicalPath(pathname: string) {
+// 剥离 base 前缀，得到不带 base 的规范路径（供下面的主题前缀匹配使用）。
+// window.location.pathname / Astro.url.pathname 在子路径部署时都带 base。
+function stripBase(pathname: string) {
+  if (basePrefix && pathname === basePrefix) return "/";
+  if (basePrefix && pathname.startsWith(`${basePrefix}/`)) {
+    return pathname.slice(basePrefix.length) || "/";
+  }
+  return pathname;
+}
+
+// 给规范路径加上 base 前缀，输出可直接用于 href 的完整路径。
+function withBase(pathname: string) {
   const normalized = withLeadingSlash(pathname);
+  if (normalized === "/") return rawBase;
+  return `${basePrefix}${normalized}`;
+}
+
+// 获取路径的规范形式（去除 base 和主题前缀，还原为内容路径）
+// 例如：/Lumen-Kael-Xystus.io/themes/flcl/blog/hello → /blog/hello
+export function getCanonicalPath(pathname: string) {
+  const normalized = withLeadingSlash(stripBase(pathname));
   // 按前缀长度倒序排列（优先匹配最长前缀，避免冲突）
   const prefixedThemes = [...themes]
     .filter((theme) => theme.routePrefix)
@@ -62,18 +85,18 @@ export function getCanonicalPath(pathname: string) {
   return normalized;
 }
 
-// 将规范路径转换为指定主题的路径
-// 例如：getThemePath("flcl", "/blog/hello") → /themes/flcl/blog/hello
+// 将规范路径转换为指定主题的路径（含 base，可直接用于 href）
+// 例如：getThemePath("flcl", "/blog/hello") → /Lumen-Kael-Xystus.io/themes/flcl/blog/hello
 export function getThemePath(themeId: ThemeId, pathname: string) {
   const canonicalPath = getCanonicalPath(pathname);
   const theme = getTheme(themeId);
 
-  // 如果是默认主题，直接返回规范路径（不添加前缀）
-  if (theme.id === DEFAULT_THEME_ID) return canonicalPath;
-  // 如果主题没有路由前缀，返回规范路径
-  if (!theme.routePrefix) return canonicalPath;
+  // 如果是默认主题，直接返回带 base 的规范路径（不添加主题前缀）
+  if (theme.id === DEFAULT_THEME_ID) return withBase(canonicalPath);
+  // 如果主题没有路由前缀，返回带 base 的规范路径
+  if (!theme.routePrefix) return withBase(canonicalPath);
   // 如果是首页，返回主题首页路径
-  if (canonicalPath === "/") return `${theme.routePrefix}/`;
+  if (canonicalPath === "/") return withBase(`${theme.routePrefix}/`);
   // 拼接主题前缀和规范路径
-  return `${theme.routePrefix}${canonicalPath}`;
+  return withBase(`${theme.routePrefix}${canonicalPath}`);
 }

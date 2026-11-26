@@ -105,6 +105,7 @@ const pagefindIntegration = () => ({
 });
 
 export default defineConfig({
+	// GitHub Pages 用户站点（仓库名 = 用户名.github.io）部署在根路径，无需 base。
 	site: "https://lun-key.github.io", // 站点 URL（用于生成 sitemap 和 RSS）
 	output: "static", // 输出模式：静态站点生成（SSG）
 	prefetch: {

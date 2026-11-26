@@ -6,7 +6,10 @@
  * 教学：资源放在 public/themes/lumen-kael-xystus/assets/ 下，浏览器用这里的 URL 直接访问。
  */
 // 本主题在 public 下的根路径；资产文件都放在它下面的 assets/ 目录里。
-const themeRoot = "/themes/lumen-kael-xystus";
+// import.meta.env.BASE_URL 在 GitHub Pages 子路径部署时为 "/Lumen-Kael-Xystus.io/"，本地为 "/"。
+// 用 replace 去掉尾部斜杠再拼接，避免产生双斜杠。
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const themeRoot = `${base}/themes/lumen-kael-xystus`;
 
 export const lumenAssets = Object.assign(
   (path: string) => `${themeRoot}/assets/${path.replace(/^\/+/, "")}`,
