@@ -6,7 +6,7 @@
  * 被谁引用：各主题布局/页面，如 BaseLayout.astro、flcl/HomePage.astro，传入 title/description/canonical/article。
  * 改它会怎样：改结构化数据的节点会影响搜索结果的富摘要展示；改 openGraphType 影响分享卡片类型；
  *             站点级文案请改 lib/site.ts 与 core/data/profile.ts，而不是这里。
- * JSON-LD 用 <script type="application/ld+json"> 承载，set:html 把字符串原样写入；replace(/</g,...) 是防注入。
+ * JSON-LD 用 script 标签（type="application/ld+json"）承载，set:html 把字符串原样写入；replace(/</g,...) 是防注入。
  */
 import { profileIdentity } from "@/core/data/profile";
 import type { BlogPost } from "@/core/content/blog";

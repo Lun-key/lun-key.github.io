@@ -5,7 +5,7 @@
  *         同时把主题写进 <html data-theme> 并暴露全局对象 window.__lunTheme 供菜单切换调用。
  * 被谁引用：各主题的布局/页面（BaseLayout.astro、flcl 的 HomePage.astro 等）在页面靠前位置引入。
  * 改它会怎样：改 canonicalPath / pathForTheme 会改变主题的 URL 前缀规则；改存储键要同步 registry.ts 的 THEME_STORAGE_KEY。
- * 教学：这是 Astro 的 frontmatter（--- 之间），只在构建/服务端运行；下面的 <script> 才会被送到浏览器执行。
+ * 教学：这是 Astro 的 frontmatter（--- 之间），只在构建/服务端运行；下面的 script 标签才会被送到浏览器执行。
  */
 import {
   DEFAULT_THEME_ID,
