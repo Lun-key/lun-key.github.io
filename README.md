@@ -2,7 +2,7 @@
 
 `Lumen-Kael-Xystus` 是 Lun-key 使用 Astro 构建的个人主题站点与数字手账。项目同时保留博客笔记、作品项目、个人资料、动画资源和互动组件，也提供多套主题外观切换。
 
-仓库地址：`https://github.com/Lun-key/Lumen-Kael-Xystus`
+仓库地址：`https://github.com/Lun-key/Lumen-Kael-Xystus.io`
 
 线上站点：`https://lun-key.github.io`
 
