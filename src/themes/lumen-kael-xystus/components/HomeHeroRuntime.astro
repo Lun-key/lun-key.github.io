@@ -1,0 +1,27 @@
+<script>
+  /**
+   * 文件职责：首页 Hero 交互的「挂载器」组件，本身没有 HTML，只跑一段脚本。
+   * 三个 mount 函数分别负责：视差/场景过渡(home-transitions)、Hero 打字与戳头像(home-hero)、
+   * 「最近文章」区交互(home-journal)。
+   * 被谁引用：HomePage.astro 末尾。仅在当前是 lumenkaelxystus 主题且存在 data-hero-stage 时才挂载。
+   * 改动影响：Home 页首屏动画；各函数真实逻辑在 ../lib/*.mjs 里。
+   */
+  import { mountHomeHero } from "../lib/home-hero.mjs";
+  import { mountHomeTransitions } from "../lib/home-transitions.mjs";
+  import { mountHomeJournal } from "../lib/home-journal.mjs";
+  // cleanup 保存本次挂载返回的「卸载函数」；页面切换前 dispose 先卸载，防止重复绑定/内存泄漏。
+  let cleanup: (() => void) | undefined;
+  const dispose = () => { cleanup?.(); cleanup = undefined; };
+  document.addEventListener("astro:before-swap", dispose);
+  // astro:page-load 在每次页面（含视图过渡）加载后触发：先卸载旧的，再判断当前是不是首页 Hero 场景。
+  document.addEventListener("astro:page-load", () => {
+    dispose();
+    if (document.body.hasAttribute("data-lumenkaelxystus") && document.querySelector("[data-hero-stage]")) {
+      const transitions = mountHomeTransitions();
+      const stopHero = mountHomeHero(transitions);
+      const stopJournal = mountHomeJournal(document.querySelector(".home-journal"));
+      // 把三个模块的卸载函数收进一个 cleanup，下次切页统一调用。
+      cleanup = () => { stopJournal(); stopHero(); transitions.cleanup(); };
+    }
+  });
+</script>

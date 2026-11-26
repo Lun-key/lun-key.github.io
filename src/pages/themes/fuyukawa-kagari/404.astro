@@ -1,0 +1,12 @@
+---
+/**
+ * 【主题路由入口 · 薄壳】lumen-kael-xystus 主题的 404 页独立入口，只转发请求。
+ * - 本文件对应 URL：/themes/lumen-kael-xystus/404。
+ * - 从 @/themes/lumen-kael-xystus 导入 NotFoundPage，实际渲染逻辑与样式在该主题组件内。
+ * - 多主题分发：顶层 pages/404.astro 用默认主题，这里是该主题自己的一套路由。
+ */
+import { NotFoundPage } from "@/themes/lumen-kael-xystus";
+---
+
+<!-- 渲染 lumen-kael-xystus 主题的 NotFoundPage（404 页面） -->
+<NotFoundPage />

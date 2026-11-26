@@ -1,0 +1,15 @@
+---
+/**
+ * 【主题路由入口 · 薄壳】这是 lumen-kael-xystus 主题的独立路由入口，
+ * 本身不写页面逻辑，只把请求转发给该主题真正的页面组件。
+ * - 本文件对应 URL：/themes/lumen-kael-xystus/（该主题的首页预览）。
+ * - 与 pages/index.astro（默认主题首页）不同，这里明确使用 lumen-kael-xystus 主题；
+ *   它从 @/themes/lumen-kael-xystus 导入 HomePage，布局样式都在该组件里。
+ * - 多主题分发机制：pages/index.astro 用默认主题 lumen-kael-xystus，
+ *   pages/themes/<主题>/ 为每个主题提供一套独立路由，彼此互不干扰。
+ */
+import { HomePage } from "@/themes/lumen-kael-xystus";
+---
+
+<!-- 渲染 lumen-kael-xystus 主题的首页组件 HomePage -->
+<HomePage />

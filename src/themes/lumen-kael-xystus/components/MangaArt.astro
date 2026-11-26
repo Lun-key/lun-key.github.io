@@ -1,0 +1,28 @@
+---
+/**
+ * 文件职责：渲染一张漫画插画的「通用图片组件」，全主题复用。
+ * 根据传入的 image 名字从 mangaArt() 拿到图片属性，再统一加上 class/alt/懒加载等。
+ * 被谁引用：ArticleLayout、Blog/About/NotFound 页面、MemoryAlbum、ChapterRail 等大量组件。
+ * 改它影响哪里：所有漫画插画的默认行为（懒加载、禁止拖拽、class 合并）；改单张图源去 data/mangaArt.ts。
+ */
+import { mangaArt, type MangaImage } from "../data/mangaArt";
+// Props：image 必填（图片名），class/alt/eager 可选。eager=true 时不懒加载（用于首屏重要图片）。
+interface Props {
+  image: MangaImage;
+  class?: string;
+  alt?: string;
+  eager?: boolean;
+}
+const { image, class: className, alt = "", eager = false } = Astro.props;
+const art = mangaArt(image);
+---
+<!-- {...art} 展开图片源/尺寸；class:list 把固定类 manga-art 和外部传入的 className 合并；
+     loading 由 eager 决定，decoding="async" 异步解码，draggable="false" 禁止拖拽图片。 -->
+<img
+  {...art}
+  class:list={["manga-art", className]}
+  alt={alt}
+  loading={eager ? "eager" : "lazy"}
+  decoding="async"
+  draggable="false"
+  />

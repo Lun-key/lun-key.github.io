@@ -1,0 +1,28 @@
+---
+/**
+ * 文件职责：全站樱花雨背景——生成 16 片花瓣，每片用不同的位置/大小/透明度/动画时长与延迟，
+ * 真正的飘落动画由 CSS 读取这些 CSS 变量完成（纯 CSS，无 JS）。
+ * 被谁引用：BaseLayout.astro（<body> 开头）。
+ * 改动影响：花瓣密度/速度；想加密花瓣改 length，想改颜色/动画曲线去 theme.css 的 .sakura-rain。
+ * 注意：右上角右键菜单的「樱花雨：开/关」通过给 body 加 hide-sakura 类来整体隐藏它。
+ */
+// Array.from({length:16}) 生成 16 片花瓣；每个属性用 index 算出错落的值，避免整齐划一。
+const petals = Array.from({ length: 16 }, (_, index) => ({
+  left: `${3 + index * 6.2}%`,
+  size: `${9 + (index * 5) % 6}px`,
+  opacity: (0.86 + (index % 3) * 0.06).toFixed(2),
+  duration: `${18 + (index * 7) % 13}s`,
+  delay: `${-2 - (index * 11) % 29}s`
+}));
+---
+
+<!-- 纯装饰，aria-hidden 让读屏软件忽略。 -->
+<div class="sakura-rain" aria-hidden="true">
+  <!-- map 生成花瓣；把每个花瓣参数写成 --sakura-* 自定义属性(CSS 变量)，
+       这样样式表就能用 var(--sakura-duration) 等读取，实现「数据驱动动画」。 -->
+  {petals.map((petal) => (
+    <span style={`--sakura-left:${petal.left};--sakura-size:${petal.size};--sakura-opacity:${petal.opacity};--sakura-duration:${petal.duration};--sakura-delay:${petal.delay}`}>
+      <i></i>
+    </span>
+  ))}
+</div>

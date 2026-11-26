@@ -1,0 +1,169 @@
+---
+/**
+ * 文件头注释 —— 这个文件做什么：
+ * 「关于 / About」个人介绍页：开场自我介绍 + 技术栈 + 番剧/角色/游戏货架 + 回忆相册(MemoryAlbum)。
+ * 被谁引用：由站点路由渲染；个人资料数据来自 @/core/data/profile，本页额外加载 about.css。
+ * 改它影响哪里：关于页。想改自我介绍文字/兴趣条目，去 core/data/profile.ts；想改排版改本页或 about.css。
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+import { lumenAssets } from "../assets";
+import MangaArt from "../components/MangaArt.astro";
+import MemoryAlbum from "../components/MemoryAlbum.astro";
+import aboutHref from "../styles/about.css?url";
+import {
+  animeFavorites,
+  currentSignals,
+  favoriteGames,
+  profileIdentity,
+  profileStatus,
+  profileTech,
+  xpFavorites
+} from "@/core/data/profile";
+
+// techPresentation：给每种技术配图标和配色（tone），下面 map 时合并进技术数据。
+const techPresentation = {
+  godot: { icon: "simple-icons:godotengine", tone: "blue" },
+  githubActions: { icon: "simple-icons:github", tone: "orange" },
+  Vue: { icon: "tabler:brand-vue", tone: "ink" },
+  SpringAI: { icon: "simple-icons:springboot", tone: "pink" },
+  java全栈: { icon: "simple-icons:openjdk", tone: "mint" },
+  agent开发应用:{ icon: "tabler:ai-agent", tone: "blue" },
+  css: { icon: "tabler:brand-css3", tone: "blue" },
+  astro : { icon: "tabler:brand-astro", tone: "blue" },
+  docker: { icon: "tabler:brand-docker", tone: "blue" },
+  git: { icon: "tabler:brand-git", tone: "orange" }
+} as const;
+// 用 map 把「数据 + 展示信息」合并成渲染所需的结构：
+// 展开运算符 {...a, ...b} 合并对象；lumenAssets() 按文件名拼出图片 URL（Banner/图库路径）。
+const techStack = profileTech.map((tech) => ({ ...tech, ...techPresentation[tech.key] }));
+const animeShelf = animeFavorites.map((item) => ({ ...item, image: lumenAssets(`about/${item.key}.webp`) }));
+const xpTags = xpFavorites.map((item) => ({ ...item, image: lumenAssets(`about/xp-${item.key}.webp`) }));
+const gameShelf = favoriteGames.map((item) => ({ ...item, image: lumenAssets(`about/${item.key}.webp`) }));
+// 页内目录：href 指向各 <section> 的 id，实现点击跳转到对应区块。
+const bookmarks = [
+  { href: "#tech-line-title", icon: "tabler:code", label: "技术" },
+  { href: "#anime-shelf-title", icon: "tabler:movie", label: "番剧" },
+  { href: "#xp-shelf-title", icon: "tabler:heart", label: "偏好" },
+  { href: "#game-shelf-title", icon: "tabler:device-gamepad", label: "游戏" },
+  { href: "#memory-album-title", icon: "tabler:book-2", label: "片刻" },
+  { href: "#now-doing-title", icon: "tabler:flower", label: "近况" }
+];
+---
+
+<BaseLayout title="About | Lumen Kael Xystus" description="关于Lunkey / lumen Kael Xystus 的技术线、二次元兴趣与个人资料。" stylesheets={[aboutHref]}>
+  <!-- ============ 页内锚点目录 ============ -->
+  <div class="me-page">
+    <!-- 开场区：头像、昵称、简介、社交链接、状态列表；右侧配漫画图。 -->
+    <header class="me-opening" aria-labelledby="about-title">
+      <div class="me-opening-copy">
+        <p class="me-eyebrow"><span>04 / Dear reader</span><span>lunkey's notebook</span></p>
+        <div class="me-identity">
+          <div class="me-portrait">
+            <img src={lumenAssets.profile} alt="Lunkey / Lumen Kael Xystus 的头像" width="640" height="640" decoding="async" fetchpriority="high" />
+          </div>
+          <div>
+            <h1 id="about-title">{profileIdentity.displayName}</h1>
+            <p class="me-handle">{profileIdentity.handle}<span aria-hidden="true"> / </span>{profileIdentity.siteName}</p>
+          </div>
+        </div>
+        <p class="me-bio">{profileIdentity.bio}</p>
+        <h2 class="me-greeting">很高兴，在这里遇见你。</h2>
+        <p class="me-introduction">这里放着我的技术笔记、二次元兴趣，也放着那些想认真记录下来的小事。</p>
+        <div class="me-socials" aria-label="我的社交主页">
+          <a href={profileIdentity.github} target="_blank" rel="noreferrer">
+            <Icon name="simple-icons:github" aria-hidden="true" /><span>GitHub</span><Icon name="tabler:external-link" aria-hidden="true" />
+          </a>
+          <a href={profileIdentity.bilibili} target="_blank" rel="noreferrer">
+            <Icon name="simple-icons:bilibili" aria-hidden="true" /><span>Bilibili</span><Icon name="tabler:external-link" aria-hidden="true" />
+          </a>
+        </div>
+        <ul class="me-status" aria-label="现在的状态">
+          {profileStatus.map((item) => <li><Icon name="tabler:pin" aria-hidden="true" /><span>{item}</span></li>)}
+        </ul>
+      </div>
+      <figure class="me-opening-art">
+        <MangaArt image="letter-page" class="me-letter-art" alt="「唯有那份炫目，未曾忘却。」" eager />
+        <figcaption>「眩しさだけは、忘れなかった。」</figcaption>
+      </figure>
+      <MangaArt image="kagari-sleeve" class="about-side-character" />
+    </header>
+
+    <!-- 手帖目录：map 生成锚点链接，点击滚到对应 section。 -->
+    <nav class="me-bookmarks" aria-label="个人手帖章节">
+      <span class="me-index-label" aria-hidden="true">INDEX</span>
+      {bookmarks.map((item) => <a href={item.href}><Icon name={item.icon} aria-hidden="true" /><span>{item.label}</span></a>)}
+    </nav>
+
+    <!-- 区块 01：技术栈列表 + 「最近的电波」近况，左右两栏。 -->
+    <section class="me-section" aria-labelledby="tech-line-title">
+      <header class="me-section-heading">
+        <div><p class="me-eyebrow">01 / Work in progress</p><h2 id="tech-line-title">技术线</h2></div>
+        <span class="me-section-note">实践、记录，再做点小东西。</span>
+      </header>
+      <div class="me-workbench">
+        <ul class="me-tech-list">
+          {techStack.map((tech) => (
+            <li class={`me-tech-entry me-tech-entry--${tech.tone}`}>
+              <span class="me-tech-icon" aria-hidden="true"><Icon name={tech.icon} /></span>
+              <div><h3>{tech.name}</h3><p>{tech.note}</p></div>
+            </li>
+          ))}
+        </ul>
+        <aside class="me-signals" aria-labelledby="now-doing-title">
+          <h3 id="now-doing-title"><Icon name="tabler:activity-heartbeat" aria-hidden="true" />最近的电波</h3>
+          <dl>{currentSignals.map((signal) => <div><dt>{signal.label}</dt><dd>{signal.text}</dd></div>)}</dl>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 区块 02：喜欢的番剧货架，animeShelf.map 循环渲染封面卡片；i 用来生成两位序号。 -->
+    <section class="me-section" aria-labelledby="anime-shelf-title">
+      <header class="me-section-heading">
+        <div><p class="me-eyebrow">02 / On my shelf</p><h2 id="anime-shelf-title">喜欢的故事</h2></div>
+        <span class="me-section-note">{String(animeShelf.length).padStart(2, "0")} 部番剧</span>
+      </header>
+      <div class="me-anime-shelf">
+        {animeShelf.map((anime, i) => (
+          <figure class="me-anime-item">
+            <div class="me-anime-image"><img src={anime.image} alt={anime.title} loading="lazy" decoding="async" width="900" height="506" /></div>
+            <figcaption><span class="me-item-number" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span><div><h3>{anime.title}</h3><p>{anime.subtitle}</p></div></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- 区块 03+04：角色偏好（xp）与课后游戏，并排两栏。 -->
+    <div class="me-interests">
+      <section class="me-section" aria-labelledby="xp-shelf-title">
+        <header class="me-section-heading"><div><p class="me-eyebrow">03 / Soft spot</p><h2 id="xp-shelf-title">一点点角色偏好</h2></div><Icon name="tabler:heart" aria-hidden="true" /></header>
+        <div class="me-xp-shelf">
+          {xpTags.map((tag) => (
+            <figure class="me-xp-item">
+              <div class="me-xp-image"><img src={tag.image} alt={tag.title} loading="lazy" decoding="async" width="900" height="675" /></div>
+              <figcaption><h3>{tag.title}</h3><p>{tag.subtitle}</p></figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+      <section class="me-section" aria-labelledby="game-shelf-title">
+        <header class="me-section-heading"><div><p class="me-eyebrow">04 / After hours</p><h2 id="game-shelf-title">课后存档</h2></div><Icon name="tabler:device-gamepad" aria-hidden="true" /></header>
+        <ul class="me-game-list">
+          {gameShelf.map((game) => (
+            <li class="about-game-card"><img src={game.image} alt={game.title} loading="lazy" decoding="async" width="900" height="506" /><div><h3>{game.title}</h3><p>{game.subtitle}</p></div></li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <!-- 区块 05：回忆相册组件（独立组件，内部有自己的动态逻辑，由 MangaRuntime 挂载）。 -->
+    <MemoryAlbum />
+
+    <!-- 页脚：回到顶部锚点。 -->
+    <footer class="me-colophon">
+      <Icon name="tabler:heart" aria-hidden="true" />
+      <p>喜欢的故事，总想与你聊聊。</p>
+      <a href="#about-title" aria-label="回到个人资料开篇"><Icon name="tabler:arrow-up" aria-hidden="true" /></a>
+    </footer>
+  </div>
+</BaseLayout>

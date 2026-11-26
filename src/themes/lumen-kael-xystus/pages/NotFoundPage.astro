@@ -1,0 +1,35 @@
+---
+/**
+ * 文件头注释 —— 这个文件做什么：
+ * 404「页面走丢了」页面，展示一张漫画插图 + 返回首页/存档的两个链接。
+ * 被谁引用：路由在找不到页面时渲染它；BaseLayout 里也有配套的 404 重定向脚本。
+ * 改它影响哪里：只影响 404 页的文案与配图；外壳样式来自 BaseLayout。
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getThemePath } from "@/core/themes/registry";
+import MangaArt from "../components/MangaArt.astro";
+---
+
+<!-- honorThemePreference=false：404 页不跟随用户主题偏好；redirectThemedNotFound=true：启用 BaseLayout 里的主题 404 重定向。 -->
+<BaseLayout
+  title="404 | Lumen Kael Xystus"
+  description="这个页面迷路了。"
+  honorThemePreference={false}
+  redirectThemedNotFound={true}
+>
+  <!-- 404 文案区 + 右侧漫画配图区；想改「迷路」文案改这里。 -->
+  <section class="not-found">
+    <div class="not-found-copy">
+      <p class="section-kicker">Lost Page</p>
+      <h1>404</h1>
+      <p>这张便签好像被风吹走了。回到首页，我们重新翻开下一页。</p>
+      <a class="back-link" href={getThemePath("lumen-kael-xystus", "/")}>← 回到首页</a>
+      <a class="back-link" href={getThemePath("lumen-kael-xystus", "/blog/")}>去笔记存档看看</a>
+    </div>
+    <figure class="not-found-visual">
+      <MangaArt image="fireworks-page" class="lost-manga-page" eager />
+      <MangaArt image="haruto-thinking" class="lost-page-character" alt="站在散落漫画页旁思考的小角色" eager />
+      <figcaption class="manga-handwritten">A page out of the story.</figcaption>
+    </figure>
+  </section>
+</BaseLayout>

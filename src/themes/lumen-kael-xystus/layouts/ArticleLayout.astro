@@ -1,0 +1,82 @@
+---
+/**
+ * 文件头注释 —— 这个文件做什么：
+ * 这是「文章详情页」的布局模板，负责渲染单篇博客文章的外壳：标题/分类/日期/标签、
+ * 正文插槽（slot）、以及移动端和桌面端两个目录（TOC）。
+ * 被谁引用：pages/ArticlePage.astro 会引入本文件，并把正文内容通过 <slot /> 传进来。
+ * 改它影响哪里：所有文章详情页的排版与目录；想改文章外观优先来这里，
+ * 想改全站通用外壳（导航、页脚、樱花雨等）请去 BaseLayout.astro。
+ */
+import BaseLayout from "./BaseLayout.astro";
+import { categoryLabel } from "@/lib/site";
+import { getThemePath } from "@/core/themes/registry";
+import { Icon } from "astro-icon/components";
+import MangaArt from "../components/MangaArt.astro";
+
+// frontmatter 是 Markdown 文章顶部的元数据对象（标题、日期、分类、标签等），由 ArticlePage 传入。
+const { frontmatter } = Astro.props;
+// ?? 是「空值合并」：只有左边为 null/undefined 时才用右边，所以 seoTitle 可覆盖普通标题。
+const title = `${frontmatter.seoTitle ?? frontmatter.title} | Lumen Kael Xystus`;
+const description = frontmatter.seoDescription ?? frontmatter.description;
+const date = new Intl.DateTimeFormat("zh-CN", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+}).format(frontmatter.pubDate);
+// 目录数据：只保留 h2~h3 级别的标题（depth 2/3），h4 以下太深不进目录。
+const headings = (Astro.props.headings ?? []).filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+---
+
+<BaseLayout title={title} description={description} isArticlePage article={frontmatter}>
+  <!-- 文章外壳：正文（左）+ 桌面目录（右）；移动端目录折叠在正文顶部。下面两块都靠 headings.length 条件渲染。 -->
+  <div class="article-shell">
+    <!-- 移动端目录：用原生 <details> 实现折叠，点击 summary 展开，无需 JS。 -->
+    {headings.length > 0 && (
+      <details class="article-mobile-toc" data-pagefind-ignore>
+        <summary><Icon name="tabler:book-2" aria-hidden="true" />这篇笔记的目录<Icon name="tabler:chevron-down" aria-hidden="true" /></summary>
+        <nav aria-label="移动端文章导航">
+          {headings.map((heading) => <a class={`toc-depth-${heading.depth}`} href={`#${heading.slug}`}>{heading.text}</a>)}
+        </nav>
+      </details>
+    )}
+    <article class="article" data-pagefind-body>
+      <a class="back-link" href={getThemePath("lumen-kael-xystus", "/blog/")}><Icon name="tabler:arrow-left" aria-hidden="true" />回到笔记存档</a>
+      <header class="article-header">
+        <div class="meta-row">
+          <span>{categoryLabel[frontmatter.category]}</span>
+          <time datetime={frontmatter.pubDate.toISOString()}>{date}</time>
+        </div>
+        <h1>{frontmatter.title}</h1>
+        <p>{frontmatter.description}</p>
+        <div class="tag-row" aria-label="Tags">
+          {frontmatter.tags.map((tag: string) => <span>#{tag}</span>)}
+        </div>
+      </header>
+      <!-- 文章正文插槽（slot）：Markdown 正文会被父组件 ArticlePage 从这里传入并渲染。
+           概念：slot 是 Astro 的「占位符」，组件把不确定内容的位置留出来，由调用方填充。
+           改这里的位置 = 改正文在页面中的落点；改正文样式请去全局样式里的 .prose 类。 -->
+      <div class="prose">
+        <slot />
+      </div>
+      <footer class="article-colophon" data-pagefind-ignore>
+        <MangaArt image="hand-note" />
+        <div><span class="manga-handwritten">To be continued.</span><p>这一页，先写到这里。</p><a href={getThemePath("lumen-kael-xystus", "/blog/")}>再翻一篇笔记 <Icon name="tabler:arrow-right" aria-hidden="true" /></a></div>
+      </footer>
+    </article>
+    {
+      <!-- 桌面端侧边目录：和上面的移动端目录共用同一份 headings 数据，靠 CSS 控制只在宽屏显示。 -->
+      headings.length > 0 && (
+        <aside class="article-toc" aria-label="文章导航" data-pagefind-ignore>
+          <p>这篇笔记的目录</p>
+          <nav>
+            {headings.map((heading) => (
+              <a class={`toc-depth-${heading.depth}`} href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
+            ))}
+          </nav>
+        </aside>
+      )
+    }
+  </div>
+</BaseLayout>
